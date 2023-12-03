@@ -1,0 +1,1 @@
+g++ "challenges/day$1.cpp" common/*.cpp --std=c++23 -I. -o test -Wall -Werror --pedantic -g ${FLAGS} && ./test
