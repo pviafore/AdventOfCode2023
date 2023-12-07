@@ -1,0 +1,43 @@
+#include <algorithm>
+#include <fstream>
+#include <functional>
+#include <iostream>
+#include <ranges>
+#include <span>
+#include <string>
+#include <vector>
+
+auto getValues(std::istream& is) {
+    std::string line;
+    getline(is, line);
+    
+    auto nums =  line | std::views::split(' ')
+                     | std::views::transform([](auto s){ return std::string(s.begin(), s.end()); })
+                     | std::views::filter([](auto s) { return !s.empty(); }) 
+                     | std::views::drop(1) 
+                     | std::views::transform([](auto s){ return std::stoul(std::string(s.begin(), s.end()));});
+    return std::vector<unsigned int>{nums.begin(), nums.end()};
+}
+
+unsigned int getWaysToBeat(std::tuple<unsigned int, unsigned int> timeAndDistance) {
+    auto [time, distance] = timeAndDistance;
+    auto filtered = std::views::iota(1u, time) | std::views::transform([time](auto num){ return (time - num)* num; })
+                                      | std::views::filter([distance](auto num){ return num > distance; });
+    std::vector<unsigned int> chances{ filtered.begin(), filtered.end() };
+    return chances.size();
+}
+
+unsigned int getWaysToBeatProduct(auto timesAndDistances) {
+    return *std::ranges::fold_left_first(timesAndDistances | std::views::transform(getWaysToBeat), std::multiplies<>());
+}
+
+int main() { 
+    std::ifstream in("input/day6.txt");
+    auto times = getValues(in);
+    auto distances = getValues(in);
+    auto timesAndDistances = std::views::zip(times, distances);
+    std::cout << getWaysToBeatProduct(timesAndDistances) << "\n";
+
+
+    return 0;
+}
