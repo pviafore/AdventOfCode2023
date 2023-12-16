@@ -1,3 +1,8 @@
+#include <algorithm>
+#include <cassert>
+#include <ranges>
+#include <utility>
+
 #include "cartesian.h"
 
 namespace cartesian {
@@ -17,6 +22,18 @@ namespace cartesian {
     
     Point Point::toBelow() const {
         return {x, y+1};
+    }
+
+    Point Point::to(Orientation orientation) const {
+        switch(orientation){
+            case Orientation::LEFT: return toLeft();
+            case Orientation::UP: return toAbove();
+            case Orientation::RIGHT: return toRight();
+            case Orientation::DOWN: return toBelow();
+        }
+
+        std::unreachable();
+        assert(false);
     }
 
     std::vector<Point> Point::getNeighbors() const{
@@ -51,6 +68,47 @@ namespace cartesian {
             return '.';
         }
         return line[p.x];
+    }
+
+    std::optional<Point> TextGrid::find(char c) const {
+        for(auto [y, line] : lines | std::views::enumerate ){
+            for(auto [x, character] : line | std::views::enumerate ){
+                if(character == c){
+                    return Point{x,y};
+                }
+            }
+        }
+        return {};
+
+    }
+
+    std::vector<std::string> TextGrid::getLines() const {
+        return lines;
+    }
+
+    std::vector<std::string> TextGrid::getColumns() const {
+        std::vector<std::string> out;
+        size_t lineLength = lines.begin()->size();
+        for (auto index : std::views::iota(0U, lineLength)){
+            out.push_back(std::ranges::fold_left(lines, std::string{}, [index](auto str, auto line){ return str + line[index]; }));
+        } 
+        return out;
+    }
+        
+    TextGrid::TextGrid(std::vector<std::string> lines) : lines(std::move(lines)) {
+
+    }
+        
+    std::vector<Point> TextGrid::findAll(char c) const {
+        std::vector<Point> points;
+         for(auto [y, line] : lines | std::views::enumerate ){
+            for(auto [x, character] : line | std::views::enumerate ){
+                if(character == c){
+                    points.emplace_back(x,y);
+                }
+            }
+        }
+        return points;
     }
 
 }

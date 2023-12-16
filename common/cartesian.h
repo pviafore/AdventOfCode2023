@@ -7,6 +7,13 @@
 #include <vector>
 namespace cartesian {
 
+    enum class Orientation { 
+        UP,
+        RIGHT,
+        DOWN,
+        LEFT
+    };
+
     struct Point {
         long x = 0;
         long y = 0;
@@ -15,9 +22,15 @@ namespace cartesian {
         Point toRight() const;        
         Point toAbove() const ;       
         Point toBelow() const;
+        Point to(Orientation orientation) const;
         std::vector<Point> getNeighbors() const;
 
         friend auto operator<=>(const Point& p1, const Point& p2) = default;
+
+        friend std::ostream& operator<<(std::ostream&  os, const Point& point) {
+            os << "(" << point.x << ", " << point.y << ")";
+            return os;
+        }
     };
 
 
@@ -33,10 +46,26 @@ namespace cartesian {
             return is;
         }
 
+        friend std::ostream& operator<<(std::ostream& os, const TextGrid& grid){
+            std::ranges::copy(grid.lines, std::ostream_iterator<std::string>(os, "\n"));
+            return os;
+        }
+
         // will break if any iterators are invalidated in the middle
         void forEach(std::function<void(Point, char)> f) const;
         // defaults to '.' if out of bounds
         char at(Point p) const;
+
+        std::optional<Point> find(char c) const;
+
+        std::vector<std::string> getLines() const;
+
+        std::vector<std::string> getColumns() const;
+
+        TextGrid() = default;
+        TextGrid(std::vector<std::string> lines);
+
+        std::vector<Point> findAll(char c) const;
 
     private:
         std::vector<std::string> lines;
