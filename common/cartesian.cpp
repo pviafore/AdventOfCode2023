@@ -111,4 +111,34 @@ namespace cartesian {
         return points;
     }
 
+    bool TextGrid::contains(Point point) const {
+        return point.y >= 0 && static_cast<size_t>(point.y) < lines.size() && point.x >= 0 && static_cast<size_t>(point.x) < lines[point.y].size();
+    }
+        
+    void TextGrid::slide(Point point, Orientation orientation, char emptySymbol) {
+        Point nextPoint = point;
+        while(this->contains(nextPoint)){
+            Point newPoint = nextPoint.to(orientation);
+            if(this->at(newPoint) != emptySymbol){ 
+                break;
+            }
+            if(!this->contains(newPoint)){
+                break;
+            }
+            nextPoint = newPoint;
+        }
+        char nextChar = this->at(nextPoint);
+        this->set(nextPoint, this->at(point));
+        this->set(point, nextChar);
+    }
+    
+    void TextGrid::set(Point p, char c){
+        assert(this->contains(p));
+        this->lines[p.y][p.x] = c;
+    }
+        
+    size_t TextGrid::height() const {
+        return lines.size();
+    }
+        
 }

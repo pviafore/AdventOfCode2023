@@ -56,6 +56,10 @@ namespace cartesian {
         // defaults to '.' if out of bounds
         char at(Point p) const;
 
+        void set(Point p, char c);
+        
+        size_t height() const;
+
         std::optional<Point> find(char c) const;
 
         std::vector<std::string> getLines() const;
@@ -66,6 +70,9 @@ namespace cartesian {
         TextGrid(std::vector<std::string> lines);
 
         std::vector<Point> findAll(char c) const;
+
+        bool contains(Point point) const;
+        void slide(Point point, Orientation orientation, char emptySymbol);
 
     private:
         std::vector<std::string> lines;
