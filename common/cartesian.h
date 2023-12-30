@@ -1,3 +1,6 @@
+#ifndef CARTESIAN_H_
+#define CARTESIAN_H_
+
 #include <algorithm>
 #include <functional>
 #include <istream>
@@ -14,15 +17,19 @@ namespace cartesian {
         LEFT
     };
 
+    Orientation turnLeft(Orientation orientation);
+    Orientation turnRight(Orientation orientation);
+    Orientation opposite(Orientation orientation);
+
     struct Point {
         long x = 0;
         long y = 0;
 
-        Point toLeft() const;       
-        Point toRight() const;        
-        Point toAbove() const ;       
-        Point toBelow() const;
-        Point to(Orientation orientation) const;
+        Point toLeft(long distance = 1) const;       
+        Point toRight(long distance = 1) const;        
+        Point toAbove(long distance = 1) const ;       
+        Point toBelow(long distance = 1) const;
+        Point to(Orientation orientation, long distance = 1) const;
         std::vector<Point> getNeighbors() const;
 
         friend auto operator<=>(const Point& p1, const Point& p2) = default;
@@ -59,6 +66,7 @@ namespace cartesian {
         void set(Point p, char c);
         
         size_t height() const;
+        size_t width() const;
 
         std::optional<Point> find(char c) const;
 
@@ -78,6 +86,8 @@ namespace cartesian {
         std::vector<std::string> lines;
 
     };
+
+    using Line = std::pair<Point, Point>;
 }
 template <>
 struct std::hash<cartesian::Point> {
@@ -86,3 +96,5 @@ struct std::hash<cartesian::Point> {
         return p.x << sizeof(size_t)/2 | p.y;
     }
 };
+
+#endif

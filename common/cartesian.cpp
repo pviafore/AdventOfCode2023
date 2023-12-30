@@ -7,29 +7,29 @@
 
 namespace cartesian {
 
-    Point Point::toLeft() const {
-        return {x-1, y};
+    Point Point::toLeft(long distance) const {
+        return {x-distance, y};
     }
     
-    Point Point::toRight() const {
-        return {x+1, y};
+    Point Point::toRight(long distance) const {
+        return {x+distance, y};
     }
 
     // technically this grid is done upside down 
-    Point Point::toAbove() const {
-        return {x, y-1};
+    Point Point::toAbove(long distance) const {
+        return {x, y-distance};
     }
     
-    Point Point::toBelow() const {
-        return {x, y+1};
+    Point Point::toBelow(long distance) const {
+        return {x, y+distance};
     }
 
-    Point Point::to(Orientation orientation) const {
+    Point Point::to(Orientation orientation, long distance) const {
         switch(orientation){
-            case Orientation::LEFT: return toLeft();
-            case Orientation::UP: return toAbove();
-            case Orientation::RIGHT: return toRight();
-            case Orientation::DOWN: return toBelow();
+            case Orientation::LEFT: return toLeft(distance);
+            case Orientation::UP: return toAbove(distance);
+            case Orientation::RIGHT: return toRight(distance);
+            case Orientation::DOWN: return toBelow(distance);
         }
 
         std::unreachable();
@@ -140,5 +140,43 @@ namespace cartesian {
     size_t TextGrid::height() const {
         return lines.size();
     }
+    
+    size_t TextGrid::width() const {
+        return lines[0].size();
+    }
+    
+    Orientation turnLeft(Orientation orientation){
+        switch(orientation) {
+            case Orientation::UP: return Orientation::LEFT;
+            case Orientation::LEFT: return Orientation::DOWN;
+            case Orientation::DOWN: return Orientation::RIGHT;
+            case Orientation::RIGHT: return Orientation::UP;
+        }
+        std::unreachable();
+        assert(false);
+    }
+    
+    Orientation turnRight(Orientation orientation){
+        switch(orientation) {
+            case Orientation::UP: return Orientation::RIGHT;
+            case Orientation::RIGHT: return Orientation::DOWN;
+            case Orientation::DOWN: return Orientation::LEFT;
+            case Orientation::LEFT: return Orientation::UP;
+        }
+        std::unreachable();
+        assert(false);
+    }
+    
+    Orientation opposite(Orientation orientation){
+        switch(orientation) {
+            case Orientation::UP: return Orientation::DOWN;
+            case Orientation::RIGHT: return Orientation::LEFT;
+            case Orientation::DOWN: return Orientation::UP;
+            case Orientation::LEFT: return Orientation::RIGHT;
+        }
+        std::unreachable();
+        assert(false);
+    }
+
         
 }
